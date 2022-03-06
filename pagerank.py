@@ -101,30 +101,32 @@ def sample_pagerank(corpus, damping_factor, n):
     page_rank = dict()
 
     for i in range(n):
+        # check if first run
         if i == 0:
             # randomly get a page
             page = random.choice(list(corpus.keys()))
-            # update rank of page
+            # update rank count of page
             page_rank[page] = 1
 
+        # get a transition model for the page
         trans_model = transition_model(corpus, page, damping_factor)
 
-        # get keys, values from transition model as lists
+        # turn keys, values from transition model into ordered lists
         pages = []
         probabilities = []
         for key, value in trans_model.items():
             pages.append(key)
             probabilities.append(value)
 
-        # randomly get a new page according to transition model
+        # randomly get a new page using transition model lists
         page = random.choices(pages, weights=probabilities, k=1)[0]
 
-        # update rank of page
+        # update rank count of page
         if not page_rank.get(page):
             page_rank[page] = 0
         page_rank[page] += 1
 
-    # normalise page_rank
+    # normalize page_rank count to probability distribution
     for key, value in page_rank.items():
         page_rank[key] = value / n
 
