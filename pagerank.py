@@ -124,7 +124,19 @@ def sample_pagerank(corpus, damping_factor, n):
             page_rank[page] = 0
         page_rank[page] += 1
 
+    # normalise page_rank
+    for key, value in page_rank.items():
+        page_rank[key] = value / n
+
     print(f'page rank: {page_rank}')
+
+    # check sum of probability distribution of page rank
+    total = 0
+    for value in page_rank.values():
+        total += value
+    print(f'sum of probability distribution: {total}')
+
+    return page_rank
 
 
 def iterate_pagerank(corpus, damping_factor):
