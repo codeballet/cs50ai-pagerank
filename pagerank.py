@@ -57,16 +57,11 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    print('Inside transition_model')
-
     model = dict()
     links_list = corpus[page]
     links_len = len(links_list)
     corpus_list = list(corpus.keys())
     corpus_len = len(list(corpus.keys()))
-
-    print(f'links from page: {links_list}')
-    print(f'number of links: {links_len}')
 
     # if page has no outgoing links return equal probabilities
     if links_len == 0:
@@ -77,11 +72,9 @@ def transition_model(corpus, page, damping_factor):
 
     # calculate probability of links from page
     pl = (1 / links_len) * damping_factor
-    print(f'Probability of list items: {pl}')
 
     # calculate probability of all pages
     pa = (1 / corpus_len) * (1 - damping_factor)
-    print(f'probability of all pages: {pa}')
 
     # generate probability distribution as dict
     for item in corpus_list:
@@ -104,12 +97,34 @@ def sample_pagerank(corpus, damping_factor, n):
     """
     print('Inside sample_pagerank')
 
-    # Choose a random page from corpus
-    page = random.choice(list(corpus.keys()))
-    print(f'Random page choice: {page}')
+    page = ''
+    page_rank = dict()
 
-    trans_model = transition_model(corpus, page, damping_factor)
-    print(f'Transition model: {trans_model}')
+    for i in range(n):
+        if i == 0:
+            # randomly get a page
+            page = random.choice(list(corpus.keys()))
+            # update rank of page
+            page_rank[page] = 1
+
+        trans_model = transition_model(corpus, page, damping_factor)
+
+        # get keys, values from transition model as lists
+        pages = []
+        probabilities = []
+        for key, value in trans_model.items():
+            pages.append(key)
+            probabilities.append(value)
+
+        # randomly get a new page according to transition model
+        page = random.choices(pages, weights=probabilities, k=1)[0]
+
+        # update rank of page
+        if not page_rank.get(page):
+            page_rank[page] = 0
+        page_rank[page] += 1
+
+    print(f'page rank: {page_rank}')
 
 
 def iterate_pagerank(corpus, damping_factor):
