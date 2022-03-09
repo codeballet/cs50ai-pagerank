@@ -150,6 +150,14 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
+    # assign each page a rank of 1 / (total number of pages in corpus)
+    page_rank = dict()
+
+    for page in corpus:
+        print(f'page in corpus: {page}')
+    # calculate new rank values based on all of the current rank values
+    # repeat process until no values changes by more than 0.001
+
     raise NotImplementedError
 
 
