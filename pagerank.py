@@ -1,7 +1,10 @@
+import numpy as np
 import os
 import random
 import re
 import sys
+
+from collections import defaultdict
 
 DAMPING = 0.85
 SAMPLES = 10000
@@ -95,8 +98,6 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    print('Inside sample_pagerank')
-
     page = ''
     page_rank = dict()
 
@@ -130,14 +131,6 @@ def sample_pagerank(corpus, damping_factor, n):
     for key, value in page_rank.items():
         page_rank[key] = value / n
 
-    print(f'page rank: {page_rank}')
-
-    # check sum of probability distribution of page rank
-    total = 0
-    for value in page_rank.values():
-        total += value
-    print(f'sum of probability distribution: {total}')
-
     return page_rank
 
 
@@ -150,15 +143,71 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
+    # create an ordered list of all pages
+    pages_list = list(corpus.keys())
+    
     # assign each page a rank of 1 / (total number of pages in corpus)
-    page_rank = dict()
+    page_rank_list = []
+    for page in pages_list:
+        page_rank_list.append(1 / len(pages_list))
 
+    # create a dictionary of incoming links to each page
+    in_links = defaultdict(list)
     for page in corpus:
-        print(f'page in corpus: {page}')
-    # calculate new rank values based on all of the current rank values
-    # repeat process until no values changes by more than 0.001
+        for key, value in corpus.items():
+            if page in value:
+                in_links[page].append(key)
 
-    raise NotImplementedError
+    # iteratively calculate page rank values
+    old_array = np.asarray(page_rank_list)
+    new_array = np.array([])
+    threshold = False
+    while threshold == False:
+        for page in pages_list:
+            # get list of all pages that links to current page
+            linking_pages = in_links[page]
+
+            # get list of probabilities for linking pages, and number of links for each page
+            pr_linking_pages = []
+            num_links_list = []
+
+            for link in linking_pages:
+                # get probabilities list
+                if link in pages_list:
+                    i = pages_list.index(link)
+                    pr_linking_pages.append(page_rank_list[i])
+                # get number of links list
+                num_links_list.append(len(corpus[link]))
+
+            # create numpy arrays of above lists
+            pr_i = np.asarray(pr_linking_pages)
+            nl_i = np.asarray(num_links_list)
+
+            # calculate probability for current page
+            pr_p = (1 - damping_factor) / len(pages_list) + damping_factor * np.sum(pr_i / nl_i)
+
+            # concatenate probability with new_array
+            probability = np.array([pr_p])
+            new_array = np.concatenate((new_array, probability))
+
+        # repeat process until no probability changes more than 0.001
+        diff_array = np.absolute(old_array - new_array)
+        if np.amax(diff_array) <= 0.001:
+            threshold = True
+
+        # update page_rank_list for next iteration
+        page_rank_list = new_array.tolist()
+
+        # update arrays for next iteration
+        old_array = new_array
+        new_array = np.array([])
+
+    # generate dictionary to return
+    result = dict()
+    for page in pages_list:
+        result[page] = page_rank_list[pages_list.index(page)]
+
+    return result
 
 
 if __name__ == "__main__":
