@@ -127,11 +127,25 @@ def sample_pagerank(corpus, damping_factor, n):
             page_rank[page] = 0
         page_rank[page] += 1
 
-    # normalize page_rank count to probability distribution
-    for key, value in page_rank.items():
-        page_rank[key] = value / n
+    # turn rank counts into numpy array and normalize
+    pages_list = []
+    ranks_list = []
 
-    return page_rank
+    for key, value in page_rank.items():
+        pages_list.append(key)
+        ranks_list.append(value)
+
+    ranks_arr = np.asarray(ranks_list)
+    norm_arr = ranks_arr / ranks_arr.sum()
+    norm_list = norm_arr.tolist()
+
+    # generate dictionary to return
+    result = dict()
+    for i in range(len(pages_list)):
+        result[pages_list[i]] = norm_list[i]
+
+    return result
+    
 
 
 def iterate_pagerank(corpus, damping_factor):
@@ -179,7 +193,7 @@ def iterate_pagerank(corpus, damping_factor):
                 # get number of links list
                 num_links_list.append(len(corpus[link]))
 
-            # create numpy arrays of above lists
+            # create numpy arrays of above two lists
             pr_i = np.asarray(pr_linking_pages)
             nl_i = np.asarray(num_links_list)
 
