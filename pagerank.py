@@ -127,7 +127,7 @@ def sample_pagerank(corpus, damping_factor, n):
             page_rank[page] = 0
         page_rank[page] += 1
 
-    # turn rank counts into numpy array and normalize
+    # normalize rank counts with numpy
     pages_list = []
     ranks_list = []
 
