@@ -171,6 +171,10 @@ def iterate_pagerank(corpus, damping_factor):
         for key, value in corpus.items():
             if page in value:
                 in_links[page].append(key)
+    # A page with no links should have one link for every page
+    for page in in_links:
+        if len(in_links[page]) == 0:
+            in_links[page] = pages_list
 
     # iteratively calculate page rank values
     old_array = np.asarray(page_rank_list)
