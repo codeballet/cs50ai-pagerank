@@ -1,6 +1,6 @@
 # Introduction to PageRank
 
-PageRank is and Artificial Intelligence to rank web pages by importance. The program uses the concept of "The Random Surfer Model", applied to two different methods:
+PageRank is an Artificial Intelligence that ranks web pages by their relative importance. The program uses the concept of "The Random Surfer Model", applied to two different methods:
 
 1. A Markov Chain of samples.
 2. An Iterative Algorithm.
